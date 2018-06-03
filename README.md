@@ -48,6 +48,7 @@ Invoking vban_receptor or vban_emitter without any parameter will give hints on 
     -c, --channels=LIST     : channels from the stream to use. LIST is of form x,y,z,... default is to forward the stream as it is
 	-o, --output=NAME       : DEPRECATED. please use -d
 	-d, --device=NAME       : Audio device name. This is file name for file backend, server name for jack backend, device for alsa, stream_name for pulseaudio.
+	-D, --description=NAME  : Description for the stream. Used for media name in pulseaudio.
 	-l, --loglevel=LEVEL    : Log level, from 0 (FATAL) to 4 (DEBUG). default is 1 (ERROR)
 	-h, --help              : display this message
 
@@ -58,6 +59,7 @@ Invoking vban_receptor or vban_emitter without any parameter will give hints on 
 	-s, --streamname=NAME   : MANDATORY. streamname to use
 	-b, --backend=TYPE      : TEMPORARY DISABLED. audio backend to use. Only alsa backend is working at this time
 	-d, --device=NAME       : Audio device name. This is file name for file backend, server name for jack backend, device for alsa, stream_name for pulseaudio.
+	-D, --description=NAME  : Description for the stream. Used for media name in pulseaudio.
 	-r, --rate=VALUE        : Audio device sample rate. default 44100
 	-n, --nbchannels=VALUE  : Audio device number of channels. default 2
 	-f, --format=VALUE      : Audio device sample format (see below). default is 16I (16bits integer)
