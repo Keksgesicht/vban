@@ -58,6 +58,7 @@ void usage()
     printf("-s, --streamname=NAME   : MANDATORY. streamname to use\n");
     printf("-b, --backend=TYPE      : audio backend to use. %s\n", audio_backend_get_help());
     printf("-d, --device=NAME       : Audio device name. This is file name for file backend, server name for jack backend, device for alsa, stream_name for pulseaudio.\n");
+	printf("-D, --description=NAME  : Description for the stream. Used for media name in pulseaudio.\n");
     printf("-r, --rate=VALUE        : Audio device sample rate. default 44100\n");
     printf("-n, --nbchannels=VALUE  : Audio device number of channels. default 2\n");
     printf("-f, --format=VALUE      : Audio device sample format (see below). default is 16I (16bits integer)\n");
@@ -80,6 +81,7 @@ int get_options(struct config_t* config, int argc, char* const* argv)
         {"streamname",  required_argument,  0, 's'},
         {"backend",     required_argument,  0, 'b'},
         {"device",      required_argument,  0, 'd'},
+		{"description", required_argument,  0, 'D'},
         {"rate",        required_argument,  0, 'r'},
         {"nbchannels",  required_argument,  0, 'n'},
         {"format",      required_argument,  0, 'f'},
@@ -125,6 +127,10 @@ int get_options(struct config_t* config, int argc, char* const* argv)
             case 'd':
                 strncpy(config->audio.device_name, optarg, AUDIO_DEVICE_NAME_SIZE-1);
                 break;
+
+			case 'D':
+				strncpy(config->audio.description, optarg, 64);
+				break;
 
             case 'r':
                 config->stream.sample_rate = atoi(optarg);

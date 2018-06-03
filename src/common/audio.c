@@ -174,7 +174,7 @@ int audio_set_stream_config(audio_handle_t handle, struct stream_config_t const*
     handle->stream = *config;
     get_device_config(handle, &device_config);
 
-    ret = handle->backend->open(handle->backend, handle->config.device_name, handle->config.direction, handle->config.buffer_size, &device_config);
+    ret = handle->backend->open(handle->backend, handle->config.device_name, handle->config.description, handle->config.direction, handle->config.buffer_size, &device_config);
     if (ret < 0)
     {
         memset(&handle->stream, 0, sizeof(handle->stream));

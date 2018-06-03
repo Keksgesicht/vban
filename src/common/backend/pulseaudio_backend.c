@@ -10,7 +10,7 @@ struct pulseaudio_backend_t
     pa_simple*              pulseaudio_handle;
 };
 
-static int pulseaudio_open(audio_backend_handle_t handle, char const* device_name, enum audio_direction direction, size_t buffer_size, struct stream_config_t const* config);
+static int pulseaudio_open(audio_backend_handle_t handle, char const* device_name, char const* description, enum audio_direction direction, size_t buffer_size, struct stream_config_t const* config);
 static int pulseaudio_close(audio_backend_handle_t handle);
 static int pulseaudio_write(audio_backend_handle_t handle, char const* data, size_t size);
 static int pulseaudio_read(audio_backend_handle_t handle, char* data, size_t size);
@@ -68,7 +68,7 @@ int pulseaudio_backend_init(audio_backend_handle_t* handle)
     
 }
 
-int pulseaudio_open(audio_backend_handle_t handle, char const* device_name, enum audio_direction direction, size_t buffer_size, struct stream_config_t const* config)
+int pulseaudio_open(audio_backend_handle_t handle, char const* device_name, char const* description, enum audio_direction direction, size_t buffer_size, struct stream_config_t const* config)
 {
     int ret;
     struct pulseaudio_backend_t* const pulseaudio_backend = (struct pulseaudio_backend_t*)handle;
@@ -95,7 +95,7 @@ int pulseaudio_open(audio_backend_handle_t handle, char const* device_name, enum
     }
 
     pulseaudio_backend->pulseaudio_handle = pa_simple_new(0, "vban", (direction == AUDIO_OUT) ? PA_STREAM_PLAYBACK : PA_STREAM_RECORD, (device_name[0] == '\0') ? 0 : device_name,
-        (direction == AUDIO_OUT) ? "playback": "record", &ss, 0, (direction == AUDIO_OUT) ? &ba : 0, &ret);
+        (description[0] == '\0') ? ((direction == AUDIO_OUT) ? "playback" : "record") : description, &ss, 0, (direction == AUDIO_OUT) ? &ba : 0, &ret);
     if (pulseaudio_backend->pulseaudio_handle == 0)
     {
         logger_log(LOG_FATAL, "pulseaudio_open: open error: %s", pa_strerror(ret));

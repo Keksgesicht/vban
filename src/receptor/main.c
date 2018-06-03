@@ -61,6 +61,7 @@ void usage()
     printf("-c, --channels=LIST     : channels from the stream to use. LIST is of form x,y,z,... default is to forward the stream as it is\n");
     printf("-o, --output=NAME       : DEPRECATED. please use -d\n");
     printf("-d, --device=NAME       : Audio device name. This is file name for file backend, server name for jack backend, device for alsa, stream_name for pulseaudio.\n");
+	printf("-D, --description=NAME  : Description for the stream. Used for media name in pulseaudio.\n");
     printf("-l, --loglevel=LEVEL    : Log level, from 0 (FATAL) to 4 (DEBUG). default is 1 (ERROR)\n");
     printf("-h, --help              : display this message\n\n");
 }
@@ -122,6 +123,7 @@ int get_options(struct config_t* config, int argc, char* const* argv)
         {"channels",    required_argument,  0, 'c'},
         {"output",      required_argument,  0, 'o'},
         {"device",      required_argument,  0, 'd'},
+		{"description", required_argument,  0, 'D'},
         {"loglevel",    required_argument,  0, 'l'},
         {"help",        no_argument,        0, 'h'},
         {0,             0,                  0,  0 }
@@ -137,7 +139,7 @@ int get_options(struct config_t* config, int argc, char* const* argv)
         switch (c)
         {
             case 'i':
-                strncpy(config->socket.ip_address, optarg, SOCKET_IP_ADDRESS_SIZE -1);
+                strncpy(config->socket.ip_address, optarg, SOCKET_IP_ADDRESS_SIZE-1);
                 break;
 
             case 'p':
@@ -145,12 +147,11 @@ int get_options(struct config_t* config, int argc, char* const* argv)
                 break;
 
             case 's':
-                strncpy(config->stream_name, optarg, VBAN_STREAM_NAME_SIZE -1);
+                strncpy(config->stream_name, optarg, VBAN_STREAM_NAME_SIZE-1);
                 break;
 
             case 'b':
                 strncpy(config->audio.backend_name, optarg, AUDIO_BACKEND_NAME_SIZE-1);
-                break;
 
             case 'q':
                 quality = atoi(optarg);
@@ -164,6 +165,10 @@ int get_options(struct config_t* config, int argc, char* const* argv)
             case 'd':
                 strncpy(config->audio.device_name, optarg, AUDIO_DEVICE_NAME_SIZE-1);
                 break;
+
+			case 'D':
+				strncpy(config->audio.description, optarg, 64);
+				break;
 
             case 'l':
                 logger_set_output_level(atoi(optarg));

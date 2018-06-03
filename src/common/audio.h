@@ -68,6 +68,7 @@ struct audio_config_t
     enum audio_direction            direction;
     char                            backend_name[AUDIO_BACKEND_NAME_SIZE];
     char                            device_name[AUDIO_DEVICE_NAME_SIZE];
+	char                            description[64];
     size_t                          buffer_size;
 };
 
