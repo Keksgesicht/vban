@@ -27,7 +27,7 @@
 /**
  * Maximum number of characters of audio device name
  */
-#define AUDIO_DEVICE_NAME_SIZE      64
+#define AUDIO_DEVICE_NAME_SIZE      128
 
 /**
  * Maximum number of characters of audio backend name
