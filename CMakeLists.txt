@@ -26,6 +26,7 @@ endif()
 option(WITH_ALSA       "Build vban with ALSA support"       ON)
 option(WITH_PULSEAUDIO "Build vban with PulseAudio support" ON)
 option(WITH_JACK       "Build vban with JACK support"       ON)
+option(WITH_PIPEWIRE   "Build vban with PipeWire support"   ON)
 
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -72,7 +73,19 @@ if(WITH_JACK)
 else()
     message(STATUS "building without JACK backend")
 endif()
-
+if (WITH_PIPEWIRE)
+    include(FindPkgConfig)
+    pkg_search_module(PIPEWIRE libpipewire-0.3 QUIET)
+    pkg_search_module(SPA libspa-0.2 QUIET)
+    if(PIPEWIRE_FOUND)
+        message(STATUS "found dependency PipeWire: ${PIPEWIRE_VERSION} '${PIPEWIRE_INCLUDEDIR}' '${PIPEWIRE_LIBRARIES}'")
+    else()
+        message(STATUS "missing PipeWire dependency, disabling backend")
+        message(FATAL_ERROR "missing PipeWire dependency. If you want to disable backend set WITH_PIPEWIRE=No")
+    endif()
+else()
+    message(STATUS "building without PipeWire backend")
+endif()
 
 # We want to compile source in src, so let's go there
 add_subdirectory(src)
