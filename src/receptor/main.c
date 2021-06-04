@@ -200,6 +200,12 @@ int get_options(struct config_t* config, int argc, char* const* argv)
         return 1;
     }
 
+    if (!strncmp(config->audio.backend_name, "pipewire", AUDIO_BACKEND_NAME_SIZE))
+    {
+        logger_log(LOG_FATAL, "Sorry pipewire backend is not ready for receptor yet");
+        return 1;
+    }
+
     return 0;
 }
 
