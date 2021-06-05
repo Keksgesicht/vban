@@ -10,6 +10,7 @@
 struct pipewire_backend_t
 {
     struct audio_backend_t  parent;
+    size_t                  frame_size;
     struct pw_thread_loop   *loop;
     struct pw_stream        *stream;
     struct pw_buffer        *pw_buf;
@@ -92,8 +93,8 @@ int pipewire_open(audio_backend_handle_t handle, char const* device_name, char c
     int ret;
     long target_id = PW_ID_ANY;
     char *target_id_end;
-    const struct spa_pod *params[1];
-    uint8_t buffer[1024];
+    const struct spa_pod *params[2];
+    uint8_t buffer[4096];
     struct spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
     struct pipewire_backend_t* const pipewire_backend = (struct pipewire_backend_t*)handle;
 
@@ -104,6 +105,7 @@ int pipewire_open(audio_backend_handle_t handle, char const* device_name, char c
     }
 
     pw_init(NULL, NULL);
+    pipewire_backend->frame_size = VBanBitResolutionSize[config->bit_fmt] * config->nb_channels;
     pipewire_backend->pw_buf = NULL;
     pipewire_backend->read_length = 0;
     pipewire_backend->read_index = 0;
@@ -116,11 +118,20 @@ int pipewire_open(audio_backend_handle_t handle, char const* device_name, char c
                                                             PW_KEY_MEDIA_ROLE, "Remote",
                                                             NULL), &stream_events, pipewire_backend);
 
+    buffer_size -= buffer_size % pipewire_backend->frame_size;
+
     params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat,
                                            &SPA_AUDIO_INFO_RAW_INIT(
                                                    .format = vban_to_pipewire_format(config->bit_fmt),
                                                    .channels = config->nb_channels,
                                                    .rate = config->sample_rate));
+
+    params[1] = spa_pod_builder_add_object(&b, SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
+                                           SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(8, 8, 64),
+                                           SPA_PARAM_BUFFERS_blocks, SPA_POD_Int(1),
+                                           SPA_PARAM_BUFFERS_size, SPA_POD_CHOICE_RANGE_Int(buffer_size * 2, buffer_size * 2, buffer_size * 4),
+                                           SPA_PARAM_BUFFERS_stride, SPA_POD_Int(pipewire_backend->frame_size),
+                                           SPA_PARAM_BUFFERS_align, SPA_POD_Int(16));
 
     if (device_name[0] != '\0')
     {
@@ -131,7 +142,7 @@ int pipewire_open(audio_backend_handle_t handle, char const* device_name, char c
 
     ret = pw_stream_connect(pipewire_backend->stream, (direction == AUDIO_OUT) ? PW_DIRECTION_OUTPUT : PW_DIRECTION_INPUT,
                       target_id, PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS,
-                      params, 1);
+                      params, 2);
 
     if (ret < 0)
     {
@@ -228,7 +239,7 @@ int pipewire_write(audio_backend_handle_t handle, char const* data, size_t size)
         data += l;
         bytes_left -= l;
         buf->datas[0].chunk->offset = 0;
-        buf->datas[0].chunk->stride = 1;
+        buf->datas[0].chunk->stride = pipewire_backend->frame_size;
         buf->datas[0].chunk->size = l;
 
         pw_stream_queue_buffer(pipewire_backend->stream, pipewire_backend->pw_buf);
