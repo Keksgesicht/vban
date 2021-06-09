@@ -94,6 +94,7 @@ int pipewire_open(audio_backend_handle_t handle, char const* device_name, char c
     long target_id = PW_ID_ANY;
     char *target_id_end;
     const struct spa_pod *params[2];
+    int n_params = 1;
     uint8_t buffer[4096];
     struct spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
     struct pipewire_backend_t* const pipewire_backend = (struct pipewire_backend_t*)handle;
@@ -126,12 +127,16 @@ int pipewire_open(audio_backend_handle_t handle, char const* device_name, char c
                                                    .channels = config->nb_channels,
                                                    .rate = config->sample_rate));
 
-    params[1] = spa_pod_builder_add_object(&b, SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
-                                           SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(8, 8, 64),
-                                           SPA_PARAM_BUFFERS_blocks, SPA_POD_Int(1),
-                                           SPA_PARAM_BUFFERS_size, SPA_POD_CHOICE_RANGE_Int(buffer_size * 2, buffer_size * 2, buffer_size * 4),
-                                           SPA_PARAM_BUFFERS_stride, SPA_POD_Int(pipewire_backend->frame_size),
-                                           SPA_PARAM_BUFFERS_align, SPA_POD_Int(16));
+    if (direction == AUDIO_OUT)
+    {
+        params[1] = spa_pod_builder_add_object(&b, SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
+                                               SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(8, 8, 64),
+                                               SPA_PARAM_BUFFERS_blocks, SPA_POD_Int(1),
+                                               SPA_PARAM_BUFFERS_size, SPA_POD_CHOICE_RANGE_Int(buffer_size * 2, buffer_size * 2, buffer_size * 4),
+                                               SPA_PARAM_BUFFERS_stride, SPA_POD_Int(pipewire_backend->frame_size),
+                                               SPA_PARAM_BUFFERS_align, SPA_POD_Int(16));
+        n_params++;
+    }
 
     if (device_name[0] != '\0')
     {
@@ -142,7 +147,7 @@ int pipewire_open(audio_backend_handle_t handle, char const* device_name, char c
 
     ret = pw_stream_connect(pipewire_backend->stream, (direction == AUDIO_OUT) ? PW_DIRECTION_OUTPUT : PW_DIRECTION_INPUT,
                       target_id, PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS,
-                      params, 2);
+                      params, n_params);
 
     if (ret < 0)
     {
@@ -285,6 +290,7 @@ int pipewire_read(audio_backend_handle_t handle, char* data, size_t size)
             else if (pipewire_backend->pw_buf->buffer->datas[0].chunk->size <= 0)
             {
                 pw_stream_queue_buffer(pipewire_backend->stream, pipewire_backend->pw_buf);
+                pipewire_backend->pw_buf = NULL;
                 pw_thread_loop_wait(pipewire_backend->loop);
             }
             else
