@@ -60,8 +60,8 @@ void usage()
     printf("-q, --quality=ID        : network quality indicator from 0 (low latency) to 4. This also have interaction with jack buffer size. default is 1\n");
     printf("-c, --channels=LIST     : channels from the stream to use. LIST is of form x,y,z,... default is to forward the stream as it is\n");
     printf("-o, --output=NAME       : DEPRECATED. please use -d\n");
-    printf("-d, --device=NAME       : Audio device name. This is file name for file backend, server name for jack backend, device for alsa, stream_name for pulseaudio.\n");
-	printf("-D, --description=NAME  : Description for the stream. Used for media name in pulseaudio.\n");
+    printf("-d, --device=NAME       : Audio device name. This is file name for file backend, server name for jack backend, device for alsa, stream_name for pulseaudio, node id for pipewire.\n");
+	printf("-D, --description=NAME  : Description for the stream. Used for media name in pulseaudio and pipewire.\n");
     printf("-l, --loglevel=LEVEL    : Log level, from 0 (FATAL) to 4 (DEBUG). default is 1 (ERROR)\n");
     printf("-h, --help              : display this message\n\n");
 }

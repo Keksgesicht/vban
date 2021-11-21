@@ -57,8 +57,8 @@ void usage()
     printf("-p, --port=PORT         : MANDATORY. port to use\n");
     printf("-s, --streamname=NAME   : MANDATORY. streamname to use\n");
     printf("-b, --backend=TYPE      : audio backend to use. %s\n", audio_backend_get_help());
-    printf("-d, --device=NAME       : Audio device name. This is file name for file backend, server name for jack backend, device for alsa, stream_name for pulseaudio.\n");
-	printf("-D, --description=NAME  : Description for the stream. Used for media name in pulseaudio.\n");
+    printf("-d, --device=NAME       : Audio device name. This is file name for file backend, server name for jack backend, device for alsa, stream_name for pulseaudio, node id for pipewire.\n");
+	printf("-D, --description=NAME  : Description for the stream. Used for media name in pulseaudio and pipewire.\n");
     printf("-r, --rate=VALUE        : Audio device sample rate. default 44100\n");
     printf("-n, --nbchannels=VALUE  : Audio device number of channels. default 2\n");
     printf("-f, --format=VALUE      : Audio device sample format (see below). default is 16I (16bits integer)\n");

@@ -15,6 +15,9 @@
 #if JACK
 #include "jack_backend.h"
 #endif
+#if PIPEWIRE
+#include "pipewire_backend.h"
+#endif
 
 #define HELP_TEXT_LEN   2048
 
@@ -34,6 +37,9 @@ static struct backend_list_item_t const backend_list[] =
     #endif
     #if JACK
     { JACK_BACKEND_NAME, jack_backend_init },
+    #endif
+    #if PIPEWIRE
+    { PIPEWIRE_BACKEND_NAME, pipewire_backend_init },
     #endif
     { PIPE_BACKEND_NAME, pipe_backend_init },
     { FILE_BACKEND_NAME, file_backend_init }
