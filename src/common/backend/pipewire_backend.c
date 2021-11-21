@@ -2,6 +2,7 @@
 // Created by adrian on 03.06.21.
 //
 
+#include <sys/types.h>
 #include "pipewire_backend.h"
 #include <pipewire/pipewire.h>
 #include <spa/param/audio/format-utils.h>
