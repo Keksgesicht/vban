@@ -23,3 +23,6 @@ build*
 _install
 .vscode
 CMakeLists.txt.user*
+
+.idea/
+CMakeFiles/
